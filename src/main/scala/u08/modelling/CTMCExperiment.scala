@@ -15,6 +15,9 @@ object CTMCExperiment:
     def eventually[A](filt: A => Boolean): Property[A] =
       trace => trace exists (e => filt(e.state))
 
+    def globally[A](filt: A => Boolean): Property[A] =
+      eventually(filt.andThen(!_)).andThen(!_)
+
     // takes a property and makes it time bounded by the magics of streams
     def bounded[A](timeBound: Double)(prop: Property[A]): Property[A] =
       trace => prop(trace takeWhile (_.time <= timeBound))
